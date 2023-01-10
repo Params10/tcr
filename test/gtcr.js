@@ -10,8 +10,8 @@ describe("GTCR", async () => {
     CHALLENGER: 2,
   };
   const appealTimeOut = 180;
-  const registrationMetaEvidence = "registrationMetaEvidence.json";
-  const clearingMetaEvidence = "clearingMetaEvidence.json";
+  // const registrationMetaEvidence = "registrationMetaEvidence.json";
+  // const clearingMetaEvidence = "clearingMetaEvidence.json";
   const submissionBaseDeposit = 2000;
   const removalBaseDeposit = 1300;
   const submissionChallengeBaseDeposit = 5000;
@@ -39,28 +39,16 @@ describe("GTCR", async () => {
       fallbackToGlobal: true,
       keepExistingDeployments: false,
     });
-    arbitrator = await ethers.getContract("EnhancedAppealableArbitrator");
+    arbitrator = await ethers.getContractAt(
+      "EnhancedAppealableArbitrator",
+      "0xd8798dfae8194d6b4cd6e2da6187ae4209d06f27"
+    );
+    console.log(arbitrator);
     await arbitrator.connect(governor).changeArbitrator(arbitrator.address);
     await arbitrator.connect(other).createDispute(3, arbitratorExtraData, {
       value: arbitrationCost,
     });
     gtcrFactory = await ethers.getContract("GTCRFactory");
-    await gtcrFactory
-      .connect(governor)
-      .deploy(
-        arbitrator.address,
-        arbitratorExtraData,
-        other.address,
-        registrationMetaEvidence,
-        clearingMetaEvidence,
-        governor.address,
-        submissionBaseDeposit,
-        removalBaseDeposit,
-        submissionChallengeBaseDeposit,
-        removalChallengeBaseDeposit,
-        challengePeriodDuration,
-        [sharedStakeMultiplier, winnerStakeMultiplier, loserStakeMultiplier]
-      );
     let gtcrAddress = await gtcrFactory.instances(0);
     gtcr = await ethers.getContractAt("GeneralizedTCR", gtcrAddress);
     MULTIPLIER_DIVISOR = (await gtcr.MULTIPLIER_DIVISOR()).toNumber();

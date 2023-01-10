@@ -3,6 +3,8 @@ require("@nomiclabs/hardhat-web3");
 require("hardhat-gas-reporter");
 require("@nomiclabs/hardhat-ethers");
 require("hardhat-deploy");
+require("@nomiclabs/hardhat-etherscan");
+require("dotenv").config();
 module.exports = {
   solidity: {
     version: "0.5.17",
@@ -51,6 +53,23 @@ module.exports = {
       saveDeployments: true,
       tags: ["staging", "foreign", "layer1"],
     },
+    chiado: {
+      chainId: 10200,
+      url: `	https://rpc.chiadochain.net`,
+      accounts:
+        process.env.PRIVATE_KEY_GOVERNOR !== undefined
+          ? [
+              process.env.PRIVATE_KEY_GOVERNOR,
+              process.env.PRIVATE_KEY_REQUESTER,
+              process.env.PRIVATE_KEY_CHALLENGER,
+              process.env.PRIVATE_KEY_GOVERNOR2,
+              process.env.PRIVATE_KEY_OTHER,
+            ]
+          : [],
+      live: true,
+      saveDeployments: true,
+      tags: ["staging", "foreign", "layer1"],
+    },
     mainnet: {
       chainId: 1,
       url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -61,6 +80,14 @@ module.exports = {
       live: true,
       saveDeployments: true,
       tags: ["production", "foreign", "layer1"],
+    },
+    arbitrumGoerli: {
+      chainId: 421613,
+      url: "https://goerli-rollup.arbitrum.io/rpc",
+      accounts: process.env.PRIVATE_KEY_GOVERNOR !== undefined ? [process.env.PRIVATE_KEY_GOVERNOR] : [],
+      live: true,
+      saveDeployments: true,
+      tags: ["staging", "home", "layer2"],
     },
   },
   namedAccounts: {
@@ -90,9 +117,10 @@ module.exports = {
     currency: "USD",
     gasPrice: 100,
   },
-  verify: {
-    etherscan: {
-      apiKey: process.env.ETHERSCAN_API_KEY,
+
+  etherscan: {
+    apiKey: {
+      arbitrumGoerli: "77P156D3P92WM7EJ66SYX466TSX3TPC3UZ",
     },
   },
 };
